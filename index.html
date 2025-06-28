@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cari Pasangan Otak</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', sans-serif;
+      font-size: 1.0em;
+      background-color: #ffe6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #f2a1c8;
+    }
+    .intro-box {
+      background-color: #fff0f5;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .board, .labels {
+      display: grid;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .board {
+      grid-template-columns: repeat(4, 120px);
+    }
+    .card, .label {
+      background-color: white;
+      border: 2px solid #ff99cc;
+      border-radius: 10px;
+      padding: 10px;
+      max-width: 600px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, background-color 0.4s;
+    }
+    .card:hover, .label:hover {
+      transform: scale(1.05);
+      background-color: #ffe6f0;
+    }
+    .matched {
+      background-color: #b3fcb3 !important;
+      pointer-events: none;
+      border: 2px solid #33cc33 !important;
+    }
+    .wrong {
+      background-color: #ffb3b3 !important;
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+    .game-container {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .brain-image {
+      position: relative;
+    }
+    .brain-image img {
+      max-width: 600px;
+      height: auto;
+    }
+    .dropzone {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 204, 255, 0.5);
+      border: 2px dashed #ff66b2;
+      transition: background-color 0.3s;
+    }
+    .dropzone.correct {
+      background-color: #b3fcb3;
+      border: 2px solid #33cc33;
+    }
+    .dropzone.wrong {
+      background-color: #ffb3b3;
+      border: 2px solid red;
+    }
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #ffa6d2;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background-color: #ff3385;
+    }
+    .question-box {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #ff99cc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    .answer-btn {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #ffa6d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .answer-btn:hover {
+      background-color: #ff3385;
+    }
+  </style>
+</head>
+<body>
+  <h1>♥ Cari Pasangan Otak ♥</h1>
+
+  <div class="intro-box" id="introBox">
+    <h2>Jom Main "Match and Learn: Psikolinguistik"</h2>
+    <p><i>Permainan ni macam candy untuk otak! Awak kena cari pasangan istilah dan makna psikolinguistik yang betul. 🎀</i></p>
+    <p><b><u>Sila rotate phone anda untuk bermain</u></b></p>
+    <button onclick="startGame()">Mula Permainan</button>
+  </div>
+
+  <p id="levelDesc" style="display:none;"><b>Level 1: Padankan struktur otak dengan fungsi linguistiknya!</b></p>
+
+  <audio id="correctSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_42b1f2cf3b.mp3"></audio>
+
+  <div class="board" id="board" style="display:none;"></div>
+
+  <div id="level2Container" style="display: none;">
+    <p><b>Level 2: Seret fungsi otak ke kawasan gambar yang betul!</b></p>
+    <div class="game-container">
+      <div class="labels">
+        <div class="label" draggable="true" data-match="4">Occipital lobe</div>
+        <div class="label" draggable="true" data-match="1">Frontal lobe</div>
+        <div class="label" draggable="true" data-match="2">Temporal Lobe</div>
+        <div class="label" draggable="true" data-match="3">Parietal lobe</div>
+      </div>
+      <div class="brain-image">
+        <img src="https://cdn.glitch.global/f5f9dccd-0e11-4951-8103-062dd0aeebae/Skull_and_brain_normal_human.svg.png?v=1751020375783" alt="Gambar Otak Realistik">
+        <div class="dropzone" data-zone="1" style="top: 90px; left:180px;"></div>
+        <div class="dropzone" data-zone="2" style="top: 250px; left: 340px;"></div>
+        <div class="dropzone" data-zone="3" style="top: 120px; left: 400px;"></div>
+        <div class="dropzone" data-zone="4" style="top:240px; left: 500px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="level3Container" style="display:none;">
+    <h2>Level 3: Cerita Mini - Pilih Strategi</h2>
+    <div class="question-box">
+      <p id="questionText">Soalan akan dipaparkan di sini.</p>
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <button class="answer-btn" onclick="checkAnswer('Top-Down')">Top-Down</button>
+        <button class="answer-btn" onclick="checkAnswer('Bottom-Up')">Bottom-Up</button>
+      </div>
+      <p id="feedback" style="font-weight:bold;"></p>
+    </div>
+  </div>
+
+  <button id="nextBtn" style="display:none;" onclick="loadLevel2()">Next Level 2</button>
+
+  <script>
+    const level1 = [
+      { text: "Broca's Area", match: "Menghasilkan pertuturan" },
+      { text: "Wernicke's Area", match: "Memproses makna" },
+      { text: "Gyrus Temporal Superior", match: "Memproses bunyi pertuturan" },
+      { text: "Arcuate Fasciculus", match: "Menghubung Broca dan Wernicke" }
+    ];
+
+    const level3Questions = [
+      { text: "1. Seorang pelajar cuba memahami perkataan yang tidak jelas dengan meneka melalui konteks ayat.", answer: "Top-Down" },
+      { text: "2. Ali mendengar setiap bunyi perkataan baru satu per satu untuk memahami maknanya.", answer: "Bottom-Up" },
+      { text: "3. Siti menggunakan tajuk artikel untuk faham isi kandungan sebelum membaca penuh.", answer: "Top-Down" }
+    ];
+
+    let cards = [], selected = [], currentQ = 0;
+
+    function startGame() {
+      document.getElementById('introBox').style.display = 'none';
+      document.getElementById('board').style.display = 'grid';
+      document.getElementById('levelDesc').style.display = 'block';
+      document.getElementById('nextBtn').style.display = 'inline-block';
+      loadLevel(level1);
+    }
+
+    function loadLevel(data) {
+      cards = [];
+      data.forEach(pair => {
+        cards.push({ type: 'struktur', value: pair.text });
+        cards.push({ type: 'fungsi', value: pair.match });
+      });
+      cards = cards.sort(() => 0.5 - Math.random());
+      renderCards();
+    }
+
+    function renderCards() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      cards.forEach((card, index) => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.textContent = card.value;
+        div.onclick = () => selectCard(index, div);
+        if (card.matched) div.classList.add('matched');
+        board.appendChild(div);
+      });
+    }
+
+    function selectCard(index, div) {
+      if (selected.length === 2 || cards[index].matched) return;
+      div.style.backgroundColor = '#ffccdd';
+      selected.push({ index, value: cards[index].value, type: cards[index].type, element: div });
+      if (selected.length === 2) {
+        const [first, second] = selected;
+        const match = [...level1].find(p =>
+          (p.text === first.value && p.match === second.value) ||
+          (p.text === second.value && p.match === first.value)
+        );
+        if (match) {
+          cards[first.index].matched = true;
+          cards[second.index].matched = true;
+          document.getElementById('correctSound').play();
+        } else {
+          first.element.classList.add('wrong');
+          second.element.classList.add('wrong');
+        }
+        setTimeout(() => { selected = []; renderCards(); }, 700);
+      }
+    }
+
+    function loadLevel2() {
+      document.getElementById('board').style.display = 'none';
+      document.getElementById('level2Container').style.display = 'block';
+      document.getElementById('levelDesc').textContent = 'Good Luck! ₍⑅ᐢ..ᐢ₎';
+      document.getElementById('nextBtn').style.backgroundColor = '#ffa6d2';
+      document.getElementById('nextBtn').textContent = 'Next Level 3';
+      document.getElementById('nextBtn').onclick = loadLevel3;
+    }
+
+    function loadLevel3() {
+      document.getElementById('level2Container').style.display = 'none';
+      document.getElementById('level3Container').style.display = 'block';
+      document.getElementById('levelDesc').textContent = 'Let’s gooo! Awak dah masuk level seterusnya! (∩˃o˂∩)♡';
+      document.getElementById('nextBtn').style.display = 'none';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = level3Questions[currentQ];
+      document.getElementById('questionText').textContent = q.text;
+      document.getElementById('feedback').textContent = '';
+    }
+
+    function checkAnswer(selected) {
+      const correct = level3Questions[currentQ].answer;
+      const feedback = document.getElementById('feedback');
+      if (selected === correct) {
+        feedback.textContent = '✔️ Betul!';
+        feedback.style.color = 'green';
+      } else {
+        feedback.textContent = '❌ Salah.';
+        feedback.style.color = 'red';
+      }
+      currentQ++;
+      if (currentQ < level3Questions.length) {
+        setTimeout(showQuestion, 1000);
+      } else {
+        setTimeout(() => {
+          document.getElementById('questionText').textContent = 'Tahniah! Anda telah melengkapkan semua soalan.';
+          document.querySelectorAll('.answer-btn').forEach(btn => btn.style.display = 'none');
+          feedback.textContent = '';
+        }, 1000);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const labels = document.querySelectorAll('.label');
+      const dropzones = document.querySelectorAll('.dropzone');
+
+      labels.forEach(label => {
+        label.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', label.dataset.match);
+          label.classList.add('dragging');
+        });
+        label.addEventListener('dragend', () => {
+          label.classList.remove('dragging');
+        });
+      });
+
+      dropzones.forEach(zone => {
+        zone.addEventListener('dragover', e => {
+          e.preventDefault();
+          zone.style.borderColor = '#ff3385';
+        });
+        zone.addEventListener('dragleave', () => {
+          zone.style.borderColor = '#ff66b2';
+        });
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          const match = e.dataTransfer.getData('text/plain');
+          if (zone.dataset.zone === match) {
+            zone.classList.add('correct');
+            document.getElementById('correctSound').play();
+          } else {
+            zone.classList.add('wrong');
+            setTimeout(() => zone.classList.remove('wrong'), 500);
+          }
+          zone.style.borderColor = '#ff66b2';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
